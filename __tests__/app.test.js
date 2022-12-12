@@ -100,4 +100,12 @@ describe('3. GET /api/articles', ()=>{
             expect(articles).toBeSortedBy('created_at', {descending: true})
         });
     });
+    test('404, returns Not Found when an invalid path is given', ()=>{
+        return request(app)
+        .get('/api/articlessstopics')
+        .expect(404)
+        .then(({body: {msg}})=>{
+            expect(msg).toBe('Not Found');
+        })
+    });
 });
