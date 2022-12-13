@@ -26,7 +26,7 @@ exports.selectArticleById = (article_id) =>{
     return db
     .query(
         `SELECT * FROM articles
-        WHERE article_id = $1`,[article_id])
+        WHERE article_id = $1;`,[article_id])
     .then((result)=>{
         if(result.rowCount === 0){
             return Promise.reject({ status:404, msg: 'Article Not Found'})
@@ -35,6 +35,17 @@ exports.selectArticleById = (article_id) =>{
         }
         
     });
+}
+
+exports.selectCommentsByArticleId = (article_id) =>{
+    return db
+    .query(
+        `SELECT comment_id,body,votes,author,created_at FROM comments 
+        WHERE article_id = $1 
+        ORDER BY created_at desc;`, [article_id])
+        .then((result)=>{
+                return result.rows;
+});
 }
 
 

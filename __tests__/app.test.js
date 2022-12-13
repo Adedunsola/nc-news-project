@@ -4,7 +4,7 @@ const app = require('../app');
 const db = require('../db/data/test-data/index');
 const seed = require('../db/seeds/seed');
 const testData = require('../db/data/test-data');
-
+jest.setTimeout(10000000);
 
 
 afterAll(()=>{
@@ -143,6 +143,52 @@ describe('4. GET /api/articles/:article_id', ()=>{
         .then((response)=>{
             const msg = response.body.msg;
             expect(msg).toBe('Article Not Found');
+        })
+    });
+});
+
+describe('5. GET api/articles/:article_id/comments', ()=>{
+    test('responds with an array of comments for the given article_id when there are existing comments', ()=>{
+        return request(app)
+        .get('/api/articles/1/comments')
+        .expect(200)
+        .then(({body:{comments}})=>{
+            expect(comments).toHaveLength(11);
+            comments.forEach((comment)=>{
+                expect(comment).toMatchObject({
+                    comment_id: expect.any(Number),
+                    body: expect.any(String),
+                    votes: expect.any(Number),
+                    author: expect.any(String),
+                    created_at: expect.any(String),
+                })
+            })
+        })
+    });
+    test('responds with an empty array when given a valid article_id with no existing comment', ()=>{
+        return request(app)
+        .get('/api/articles/2/comments')
+        .expect(200)
+        .then(({body:{comments}})=>{
+            expect(comments).toHaveLength(0);
+        })
+    });
+    test('returns the array of comments sorted by date and is the most recent date(descending order) by default', ()=>{
+        return request(app)
+        .get('/api/articles/3/comments')
+        .expect(200)
+        .then(({body: { comments }})=>{
+            expect(comments).toBeSortedBy('created_at', {descending: true})
+        });
+    });
+
+    test('400: invalid article_id returns bad request', ()=>{
+        return request(app)
+        .get('/api/articles/monkey/comments')
+        .expect(400)
+        .then((response)=>{
+            const msg = response.body.msg;
+            expect(msg).toBe('Bad Request');
         })
     });
 });
