@@ -142,7 +142,7 @@ describe('4. GET /api/articles/:article_id', ()=>{
         .expect(404)
         .then((response)=>{
             const msg = response.body.msg;
-            expect(msg).toBe('Article Not Found');
+            expect(msg).toBe('Not Found');
         })
     });
 });
@@ -189,6 +189,16 @@ describe('5. GET api/articles/:article_id/comments', ()=>{
         .then((response)=>{
             const msg = response.body.msg;
             expect(msg).toBe('Bad Request');
+        })
+    });
+
+    test('404: Valid but non-existent article_id returns Not Found', ()=>{
+        return request(app)
+        .get('/api/articles/100/comments')
+        .expect(404)
+        .then((response)=>{
+            const msg = response.body.msg;
+            expect(msg).toBe('Not Found');
         })
     });
 });
