@@ -1,4 +1,4 @@
-const {selectTopics} = require('../models/topics.model');
+const {selectTopics,selectArticles} = require('../models/news.model');
 
 
 exports.getMessage = (req,res,next)=>{
@@ -13,8 +13,18 @@ exports.getTopics = (req,res,next)=>{
     })
     .catch((err)=>{
         next(err)
-    })
+    }) 
 };
+
+exports.getArticles =(req,res,next)=>{
+    selectArticles()
+    .then((articles)=>{
+        res.status(200).send({articles})
+    })
+    .catch((err)=>{
+        next(err)
+    })
+}
 
 
 
