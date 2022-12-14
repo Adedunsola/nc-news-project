@@ -74,6 +74,17 @@ exports.addComment = (newComment, article_id) =>{
             })
         }
     })
+    .then((result)=>{
+        if(result.rowCount !== 0){
+            return result.rows;
+        }
+            return exports.selectArticleById(article_id)
+})  .then((result)=>{
+        if(result.length === 1){
+            return []
+        }
+            return result
+})
 }
 
 

@@ -75,7 +75,6 @@ describe('3. GET /api/articles', ()=>{
         .get('/api/articles')
         .expect(200)
         .then(({body: {articles}})=>{
-            expect(articles).toBeInstanceOf(Array);
             expect(articles).toHaveLength(12);
             articles.forEach((article)=>{
                 expect(article).toEqual(
@@ -191,6 +190,7 @@ describe('5. GET api/articles/:article_id/comments', ()=>{
             expect(msg).toBe('Bad Request');
         })
     });
+
     test('404: Valid but non-existent article_id returns not found', ()=>{
         return request(app)
         .get('/api/articles/100/comments')
@@ -253,12 +253,17 @@ describe('6. POST api/articles/:article_id/comments', ()=>{
         return request(app)
         .post('/api/articles/100/comments')
         .send(newComment)
+
+    test('404: Valid but non-existent article_id returns Not Found', ()=>{
+        return request(app)
+        .get('/api/articles/100/comments')
         .expect(404)
         .then((response)=>{
             const msg = response.body.msg;
             expect(msg).toBe('Not Found');
         });
     });
+    
     test('400: posting a comment to a valid article_id with a null key (that has a NOT NULL constraint) returns bad request', ()=>{
         const newComment = {
             username: "",
