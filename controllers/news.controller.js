@@ -1,5 +1,4 @@
-const {selectTopics,selectArticles, selectArticleById} = require('../models/news.model');
-
+const {selectTopics,selectArticles, selectArticleById, selectCommentsByArticleId} = require('../models/news.model');
 
 exports.getMessage = (req,res,next)=>{
     const msg = 'OK';
@@ -36,6 +35,17 @@ exports.getArticleById = (req,res,next)=>{
         next(err)
     })
 };
+
+exports.getCommentsByArticleId = (req,res,next)=>{
+    const {article_id} = req.params
+    selectCommentsByArticleId(article_id)
+    .then((comments)=>{
+        res.status(200).send({comments})
+    })
+    .catch((err)=>{
+        next(err)
+    })
+}
 
 
 
