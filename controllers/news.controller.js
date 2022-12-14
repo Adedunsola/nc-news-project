@@ -1,4 +1,5 @@
-const {selectTopics,selectArticles, selectArticleById, selectCommentsByArticleId, addComment,updateVotesInArticles} = require('../models/news.model');
+
+const {selectTopics,selectArticles, selectArticleById, selectCommentsByArticleId, addComment,updateVotesInArticles,selectUsers} = require('../models/news.model');
 
 exports.getMessage = (req,res,next)=>{
     const msg = 'OK';
@@ -67,6 +68,11 @@ exports.patchVotesInArticles =(req,res,next)=>{
         next(err)
     })
 }
+
+exports.getUsers = (req,res,next)=>{
+    selectUsers()
+    .then((users)=>{
+        res.status(200).send({users})
 
 
 

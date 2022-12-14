@@ -382,3 +382,31 @@ describe('7. PATCH api/articles/:article_id', () => {
         })
     });
 });
+
+describe('8. GET /api/users', ()=>{
+    test('responds with an array of user objects', ()=>{
+        return request(app)
+        .get('/api/users')
+        .expect(200)
+        .then(({body: {users}})=>{
+            expect(users).toHaveLength(4);
+            users.forEach((user)=>{
+                expect(user).toEqual(
+                expect.objectContaining({
+                    username: expect.any(String),
+                    name: expect.any(String),
+                    avatar_url: expect.any(String),
+                })
+                );
+            });
+        });
+    })
+    test('404, returns Not Found when invalid API is given', ()=>{
+        return request(app)
+        .get('/api/CreateTable')
+        .expect(404)
+        .then(({body: {msg}})=>{
+            expect(msg).toBe('Not Found');
+        })
+    });
+})

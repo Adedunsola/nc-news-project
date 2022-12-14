@@ -2,9 +2,10 @@
 const express = require ('express');
 const app = express();
 const {manage404Errors,manage400Errors,manageCustomErrors} = require('./controllers/errorhandling')
-const {getMessage, getTopics, getArticles, getArticleById,getCommentsByArticleId,postComment,patchVotesInArticles} = require ('./controllers/news.controller');
+const {getMessage, getTopics, getArticles, getArticleById,getCommentsByArticleId,postComment,patchVotesInArticles,getUser} = require ('./controllers/news.controller');
 
 app.use(express.json())
+
 
 
 
@@ -29,6 +30,10 @@ app.post('/api/articles/:article_id/comments', postComment);
 
 //7. PATCH /api/articles/:article_id
 app.patch('/api/articles/:article_id', patchVotesInArticles);
+
+//8. GET /api/users
+app.get('/api/users', getUsers);
+
 
 
 

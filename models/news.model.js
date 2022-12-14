@@ -87,6 +87,7 @@ exports.addComment = (newComment, article_id) =>{
 })
 }
 
+
 exports.updateVotesInArticles = (inc_votes,article_id)=>{
     return db
     .query(`
@@ -103,11 +104,14 @@ exports.updateVotesInArticles = (inc_votes,article_id)=>{
     })
 } 
     
-
-
-
-
-
+exports.selectUsers=()=>{
+    return db
+    .query(`
+    SELECT * FROM users`)
+    .then((result)=>{
+        return result.rows;
+    })
+}
 
 
 
