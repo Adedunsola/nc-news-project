@@ -12,7 +12,7 @@ afterAll(()=>{
 
 beforeEach(()=> seed(testData))
 
-describe('1. GET /api', ()=>{
+describe('0. GET /api', ()=>{
     test('returns message: OK', ()=>{
         return request(app)
         .get('/api')
@@ -32,7 +32,7 @@ describe('1. GET /api', ()=>{
     });
 });
 
-describe('2. GET /api/topics', ()=>{
+describe('3. GET /api/topics', ()=>{
     test('responds with an array of topic objects', ()=>{
         return request(app)
         .get('/api/topics')
@@ -68,7 +68,7 @@ describe('2. GET /api/topics', ()=>{
     });
 });
 
-describe('3. GET /api/articles', ()=>{
+describe('4. GET /api/articles', ()=>{
     test('responds with an array of article objects', ()=>{
         return request(app)
         .get('/api/articles')
@@ -108,7 +108,7 @@ describe('3. GET /api/articles', ()=>{
     });
 });
 
-describe('4. GET /api/articles/:article_id', ()=>{
+describe('5. GET /api/articles/:article_id', ()=>{
     test('responds with the requested article object', ()=>{
         return request(app)
         .get('/api/articles/2')
@@ -145,7 +145,7 @@ describe('4. GET /api/articles/:article_id', ()=>{
     });
 });
 
-describe('5. GET api/articles/:article_id/comments', ()=>{
+describe('6. GET api/articles/:article_id/comments', ()=>{
     test('responds with an array of comments for the given article_id when there are existing comments', ()=>{
         return request(app)
         .get('/api/articles/1/comments')
@@ -201,7 +201,7 @@ describe('5. GET api/articles/:article_id/comments', ()=>{
     });
 });
 
-describe('6. POST api/articles/:article_id/comments', ()=>{
+describe('7. POST api/articles/:article_id/comments', ()=>{
     test('201: responds with the newly posted comment', ()=>{
         const newComment = {
             username: "butter_bridge",
@@ -302,7 +302,7 @@ describe('6. POST api/articles/:article_id/comments', ()=>{
     });
 });
 
-describe('7. PATCH api/articles/:article_id', () => {
+describe('8. PATCH api/articles/:article_id', () => {
     test('responds with the newly updated article after vote increment', () => {
       return request(app)
         .patch('/api/articles/3')
@@ -379,7 +379,7 @@ describe('7. PATCH api/articles/:article_id', () => {
     });
 });
 
-describe('8. GET /api/users', ()=>{
+describe('9. GET /api/users', ()=>{
     test('responds with an array of user objects', ()=>{
         return request(app)
         .get('/api/users')
