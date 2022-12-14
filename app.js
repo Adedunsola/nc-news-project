@@ -1,8 +1,11 @@
 
 const express = require ('express');
 const app = express();
-const {manage404Errors,manage400Errors,manageCustomErrors} = require('./controllers/errorhandling')
-const {getMessage, getTopics, getArticles, getArticleById,getCommentsByArticleId,postComment,patchVotesInArticles,getUser} = require ('./controllers/news.controller');
+const {manage404Errors,manage400Errors,manageCustomErrors} = require('./errorhandling')
+const {getMessage, getTopics} = require ('./controllers/topics.controller');
+const {getArticles, getArticleById,patchVotesInArticles} = require ('./controllers/article.controller');
+const {getCommentsByArticleId,postComment} = require ('./controllers/comments.controller');
+const {getUsers} = require ('./controllers/users.controller');
 
 app.use(express.json())
 
