@@ -406,3 +406,44 @@ describe('9. GET /api/users', ()=>{
         })
     });
 })
+
+describe('10. GET /api/articles?queries', ()=>{
+    test('responds with article specified by the topic query', ()=>{
+        return request(app)
+        .get('/api/articles?topic=cats')
+        .expect(200)
+        .then(({body})=>{
+            expect(body.articles[0]).toMatchObject({
+                article_id: 5,
+                title: "UNCOVERED: catspiracy to bring down democracy",
+                topic: "cats",
+                author: "rogersop",
+                created_at: "2020-08-03T13:14:00.000Z",
+                votes: 0,
+                comment_count: '2'
+            })
+        });
+    });
+    test('responds with all articles when query is omitted', ()=>{
+        return request(app)
+        .get('/api/articles')
+        .expect(200)
+        .then(({body:{articles}})=>{
+            expect(articles).toHaveLength(12);
+            articles.forEach((article)=>{
+                expect(article).toEqual(
+                expect.objectContaining({
+                    article_id: expect.any(Number),
+                    title: expect.any(String),
+                    topic: expect.any(String),
+                    author: expect.any(String),
+                    created_at: expect.any(String),
+                    votes: expect.any(Number),
+                    comment_count: expect.any(String)
+                })
+                );
+            });
+        });
+    });
+
+})

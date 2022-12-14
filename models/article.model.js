@@ -1,18 +1,28 @@
 const db = require('../db/connection');
 
 
+
 //ARTICLES ENDPOINT
-exports.selectArticles = ()=>{
+exports.selectArticles = (topicQuery)=>{
    const queryString = 
      `SELECT articles.article_id,articles.title,articles.topic,articles.author,articles.created_at,articles.votes,count(comments.article_id=articles.article_id) AS comment_count
      FROM articles
      LEFT JOIN comments ON articles.article_id=comments.article_id
-     GROUP BY articles.article_id
-     ORDER BY articles.created_at desc;`
-   return db
+     GROUP BY articles.article_id 
+     ORDER BY articles.created_at desc;`;
+    
+    return db
     .query(queryString).then((result)=>{
-        return result.rows;
-    });
+        const allArticles = result.rows
+
+        if(topicQuery == null){
+        return allArticles;
+    }else{
+        const relevantArticles =  allArticles.filter(function(eachArticle){
+        return eachArticle.topic == topicQuery; 
+        }) 
+        return relevantArticles;
+}});
 }
 
 
@@ -45,3 +55,6 @@ exports.updateVotesInArticles = (inc_votes,article_id)=>{
         } 
     })
 } 
+
+
+ 

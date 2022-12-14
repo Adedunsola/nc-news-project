@@ -3,7 +3,8 @@ const {selectArticles, selectArticleById, updateVotesInArticles} = require('../m
 //ARTICLES CONTROLLER
 
 exports.getArticles =(req,res,next)=>{
-    selectArticles()
+    const topicQuery = req.query.topic
+    selectArticles(topicQuery)
     .then((articles)=>{
         res.status(200).send({articles})
     })
@@ -33,3 +34,4 @@ exports.patchVotesInArticles =(req,res,next)=>{
         next(err)
     })
 }
+
