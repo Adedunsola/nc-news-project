@@ -4,7 +4,6 @@ const app = require('../app');
 const db = require('../db/data/test-data/index');
 const seed = require('../db/seeds/seed');
 const testData = require('../db/data/test-data');
-jest.setTimeout(10000000);
 
 
 afterAll(()=>{
@@ -116,7 +115,7 @@ describe('4. GET /api/articles/:article_id', ()=>{
         .get('/api/articles/2')
         .expect(200)
         .then((response)=>{
-            expect(response.body).toEqual({article: [{
+            expect(response.body).toMatchObject({article: [{
                 article_id: 2,
                 title: "Sony Vaio; or, The Laptop",
                 topic: "mitch",
@@ -287,7 +286,7 @@ describe('7. PATCH api/articles/:article_id', () => {
         .send({ inc_votes: 45 })
         .expect(200)
         .then(({body})=>{
-          expect(body.article).toMatchObject([{
+          expect(body.article[0]).toMatchObject({
             article_id: 3,
             title: "Eight pug gifs that remind me of mitch",
             topic: "mitch",
@@ -295,7 +294,7 @@ describe('7. PATCH api/articles/:article_id', () => {
             body: "some gifs",
             created_at: "2020-11-03T09:12:00.000Z",
             votes: 45,
-          }]);
+          });
         }) 
     });
     test('responds with the newly updated article after vote decrement', () => {
@@ -322,7 +321,7 @@ describe('7. PATCH api/articles/:article_id', () => {
         .expect(404)
         .then((response)=>{
             const msg = response.body.msg;
-            expect(msg).toBe('Not Found');
+            expect(msg).toBe('Article Not Found');
         })
     });
     test('400: patching votes to an invalid article returns bad request', ()=>{
@@ -339,6 +338,16 @@ describe('7. PATCH api/articles/:article_id', () => {
         return request(app)
         .patch('/api/articles/2')
         .send({ inc_votes: 'not a number' })
+        .expect(400)
+        .then((response)=>{
+            const msg = response.body.msg;
+            expect(msg).toBe('Bad Request');
+        })
+    });
+    test('400: patching votes to a valid article but without the "inc_votes" property, returns bad request', ()=>{
+        return request(app)
+        .patch('/api/articles/2')
+        .send({voting: 60})
         .expect(400)
         .then((response)=>{
             const msg = response.body.msg;
