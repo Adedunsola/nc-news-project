@@ -213,7 +213,7 @@ describe('6. POST api/articles/:article_id/comments', ()=>{
         .send(newComment)
         .expect(201)
         .then(({body})=>{
-            expect(body.comment[0]).toEqual({
+            expect(body.comment[0]).toMatchObject({
                 comment_id: 19,
                 body: "my eyes hurt from looking at this article",
                 article_id: 6,
@@ -222,6 +222,28 @@ describe('6. POST api/articles/:article_id/comments', ()=>{
                 created_at: expect.any(String)
             })
         });
+    });
+    test('201: posting a comment to a valid article id, including multiple keys, only accepts username and body, ignoring others', ()=>{
+        const newComment = {
+            username: "rogersop",
+            body: "my eyes hurt from looking at this article",
+            article_id: 15,
+            topic: "The article by northcoders"
+        };
+        return request(app)
+        .post('/api/articles/7/comments')
+        .send(newComment)
+        .expect(201)
+        .then(({body})=>{
+            expect(body.comment[0]).toMatchObject({
+                comment_id: 19,
+                body: 'my eyes hurt from looking at this article',
+                article_id: 7,
+                author: "rogersop",
+                votes: 0,
+                created_at: expect.any(String)
+              })
+        })
     });
     test('404: posting a comment to a valid but non-existent article returns not found', ()=>{
         const newComment = {
