@@ -237,10 +237,23 @@ describe('6. POST api/articles/:article_id/comments', ()=>{
             expect(msg).toBe('Not Found');
         });
     });
-    test('400: posting a coment to a valid article_id with a null key (that has a NOT NULL constraint) returns bad request', ()=>{
+    test('400: posting a comment to a valid article_id with a null key (that has a NOT NULL constraint) returns bad request', ()=>{
         const newComment = {
             username: "",
-            body: "my eyes hurt from looking at this article"
+            body: "the grass is greener on the other side :)"
+        };
+        return request(app)
+        .post('/api/articles/10/comments')
+        .send(newComment)
+        .expect(400)
+        .then((response)=>{
+            const msg = response.body.msg;
+            expect(msg).toBe('Bad Request');
+        });
+    });
+    test('400: posting a comment to a valid article_id with a missing key (that has a NOT NULL constraint) returns bad request', ()=>{
+        const newComment = {
+            username: "icellusedkars",
         };
         return request(app)
         .post('/api/articles/10/comments')
