@@ -4,7 +4,6 @@ const app = require('../app');
 const db = require('../db/data/test-data/index');
 const seed = require('../db/seeds/seed');
 const testData = require('../db/data/test-data');
-jest.setTimeout(10000000);
 
 
 afterAll(()=>{
@@ -75,7 +74,6 @@ describe('3. GET /api/articles', ()=>{
         .get('/api/articles')
         .expect(200)
         .then(({body: {articles}})=>{
-            expect(articles).toBeInstanceOf(Array);
             expect(articles).toHaveLength(12);
             articles.forEach((article)=>{
                 expect(article).toEqual(
@@ -116,7 +114,7 @@ describe('4. GET /api/articles/:article_id', ()=>{
         .get('/api/articles/2')
         .expect(200)
         .then((response)=>{
-            expect(response.body).toEqual({article: [{
+            expect(response.body).toMatchObject({article: [{
                 article_id: 2,
                 title: "Sony Vaio; or, The Laptop",
                 topic: "mitch",
@@ -192,6 +190,69 @@ describe('5. GET api/articles/:article_id/comments', ()=>{
         })
     });
 
+    test('404: Valid but non-existent article_id returns not found', ()=>{
+        return request(app)
+        .get('/api/articles/100/comments')
+        .expect(404)
+        .then((response)=>{
+            const msg = response.body.msg;
+            expect(msg).toBe('Not Found');
+        })
+    });
+});
+
+describe('6. POST api/articles/:article_id/comments', ()=>{
+    test('201: responds with the newly posted comment', ()=>{
+        const newComment = {
+            username: "butter_bridge",
+            body: "my eyes hurt from looking at this article"
+        };
+        return request(app)
+        .post('/api/articles/6/comments')
+        .send(newComment)
+        .expect(201)
+        .then(({body})=>{
+            expect(body.comment[0]).toMatchObject({
+                comment_id: 19,
+                body: "my eyes hurt from looking at this article",
+                article_id: 6,
+                author: "butter_bridge",
+                votes: 0,
+                created_at: expect.any(String)
+            })
+        });
+    });
+    test('201: posting a comment to a valid article id, including multiple keys, only accepts username and body, ignoring others', ()=>{
+        const newComment = {
+            username: "rogersop",
+            body: "my eyes hurt from looking at this article",
+            article_id: 15,
+            topic: "The article by northcoders"
+        };
+        return request(app)
+        .post('/api/articles/7/comments')
+        .send(newComment)
+        .expect(201)
+        .then(({body})=>{
+            expect(body.comment[0]).toMatchObject({
+                comment_id: 19,
+                body: 'my eyes hurt from looking at this article',
+                article_id: 7,
+                author: "rogersop",
+                votes: 0,
+                created_at: expect.any(String)
+              })
+        })
+    });
+    test('404: posting a comment to a valid but non-existent article returns not found', ()=>{
+        const newComment = {
+            username: "butter_bridge",
+            body: "my eyes hurt from looking at this article"
+        };
+        return request(app)
+        .post('/api/articles/100/comments')
+        .send(newComment)
+
     test('404: Valid but non-existent article_id returns Not Found', ()=>{
         return request(app)
         .get('/api/articles/100/comments')
@@ -199,6 +260,125 @@ describe('5. GET api/articles/:article_id/comments', ()=>{
         .then((response)=>{
             const msg = response.body.msg;
             expect(msg).toBe('Not Found');
+        });
+    });
+
+    test('400: posting a comment to a valid article_id with a null key (that has a NOT NULL constraint) returns bad request', ()=>{
+        const newComment = {
+            username: "",
+            body: "the grass is greener on the other side :)"
+        };
+        return request(app)
+        .post('/api/articles/10/comments')
+        .send(newComment)
+        .expect(400)
+        .then((response)=>{
+            const msg = response.body.msg;
+            expect(msg).toBe('Bad Request');
+        });
+    });
+    test('400: posting a comment to a valid article_id with a missing key (that has a NOT NULL constraint) returns bad request', ()=>{
+        const newComment = {
+            username: "icellusedkars",
+        };
+        return request(app)
+        .post('/api/articles/10/comments')
+        .send(newComment)
+        .expect(400)
+        .then((response)=>{
+            const msg = response.body.msg;
+            expect(msg).toBe('Bad Request');
+        });
+    });
+    test('400: posting a comment to an invalid article id returns bad request', ()=>{
+        const newComment = {
+            username: "icellusedkars",
+            body: "my eyes hurt from looking at this article"
+        };
+        return request(app)
+        .post('/api/articles/DROPDATABASE/comments')
+        .send(newComment)
+        .expect(400)
+        .then((response)=>{
+            const msg = response.body.msg;
+            expect(msg).toBe('Bad Request');
+        })
+    });
+});
+
+describe('7. PATCH api/articles/:article_id', () => {
+    test('responds with the newly updated article after vote increment', () => {
+      return request(app)
+        .patch('/api/articles/3')
+        .send({ inc_votes: 45 })
+        .expect(200)
+        .then(({body})=>{
+          expect(body.article[0]).toMatchObject({
+            article_id: 3,
+            title: "Eight pug gifs that remind me of mitch",
+            topic: "mitch",
+            author: "icellusedkars",
+            body: "some gifs",
+            created_at: "2020-11-03T09:12:00.000Z",
+            votes: 45,
+          });
+        }) 
+    });
+    test('responds with the newly updated article after vote decrement', () => {
+        return request(app)
+          .patch('/api/articles/1')
+          .send({ inc_votes: -45 })
+          .expect(200)
+          .then(({body})=>{
+            expect(body.article).toMatchObject([{
+              article_id: 1,
+              title: "Living in the shadow of a great man",
+              topic: "mitch",
+              author: "butter_bridge",
+              body: "I find this existence challenging",
+              created_at: "2020-07-09T20:11:00.000Z",
+              votes: 55,
+            }]);
+          }) 
+      });
+     test('404: patching votes to a valid but non-existent article returns not found', ()=>{
+        return request(app)
+        .patch('/api/articles/390')
+        .send({ inc_votes: 345 })
+        .expect(404)
+        .then((response)=>{
+            const msg = response.body.msg;
+            expect(msg).toBe('Article Not Found');
+        })
+    });
+    test('400: patching votes to an invalid article returns bad request', ()=>{
+        return request(app)
+        .patch('/api/articles/BANANA')
+        .send({ inc_votes: 45 })
+        .expect(400)
+        .then((response)=>{
+            const msg = response.body.msg;
+            expect(msg).toBe('Bad Request');
+        })
+    });
+    test('400: patching votes to a valid article but with an invalid key, returns bad request', ()=>{
+        return request(app)
+        .patch('/api/articles/2')
+        .send({ inc_votes: 'not a number' })
+        .expect(400)
+        .then((response)=>{
+            const msg = response.body.msg;
+            expect(msg).toBe('Bad Request');
+        })
+    });
+    test('400: patching votes to a valid article but without the "inc_votes" property, returns bad request', ()=>{
+        return request(app)
+        .patch('/api/articles/2')
+        .send({voting: 60})
+        .expect(400)
+        .then((response)=>{
+            const msg = response.body.msg;
+            expect(msg).toBe('Bad Request');
         })
     });
 });
