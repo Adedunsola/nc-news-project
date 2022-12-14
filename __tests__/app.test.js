@@ -191,6 +191,69 @@ describe('5. GET api/articles/:article_id/comments', ()=>{
         })
     });
 
+    test('404: Valid but non-existent article_id returns not found', ()=>{
+        return request(app)
+        .get('/api/articles/100/comments')
+        .expect(404)
+        .then((response)=>{
+            const msg = response.body.msg;
+            expect(msg).toBe('Not Found');
+        })
+    });
+});
+
+describe('6. POST api/articles/:article_id/comments', ()=>{
+    test('201: responds with the newly posted comment', ()=>{
+        const newComment = {
+            username: "butter_bridge",
+            body: "my eyes hurt from looking at this article"
+        };
+        return request(app)
+        .post('/api/articles/6/comments')
+        .send(newComment)
+        .expect(201)
+        .then(({body})=>{
+            expect(body.comment[0]).toMatchObject({
+                comment_id: 19,
+                body: "my eyes hurt from looking at this article",
+                article_id: 6,
+                author: "butter_bridge",
+                votes: 0,
+                created_at: expect.any(String)
+            })
+        });
+    });
+    test('201: posting a comment to a valid article id, including multiple keys, only accepts username and body, ignoring others', ()=>{
+        const newComment = {
+            username: "rogersop",
+            body: "my eyes hurt from looking at this article",
+            article_id: 15,
+            topic: "The article by northcoders"
+        };
+        return request(app)
+        .post('/api/articles/7/comments')
+        .send(newComment)
+        .expect(201)
+        .then(({body})=>{
+            expect(body.comment[0]).toMatchObject({
+                comment_id: 19,
+                body: 'my eyes hurt from looking at this article',
+                article_id: 7,
+                author: "rogersop",
+                votes: 0,
+                created_at: expect.any(String)
+              })
+        })
+    });
+    test('404: posting a comment to a valid but non-existent article returns not found', ()=>{
+        const newComment = {
+            username: "butter_bridge",
+            body: "my eyes hurt from looking at this article"
+        };
+        return request(app)
+        .post('/api/articles/100/comments')
+        .send(newComment)
+
     test('404: Valid but non-existent article_id returns Not Found', ()=>{
         return request(app)
         .get('/api/articles/100/comments')
@@ -198,6 +261,48 @@ describe('5. GET api/articles/:article_id/comments', ()=>{
         .then((response)=>{
             const msg = response.body.msg;
             expect(msg).toBe('Not Found');
+        });
+    });
+    
+    test('400: posting a comment to a valid article_id with a null key (that has a NOT NULL constraint) returns bad request', ()=>{
+        const newComment = {
+            username: "",
+            body: "the grass is greener on the other side :)"
+        };
+        return request(app)
+        .post('/api/articles/10/comments')
+        .send(newComment)
+        .expect(400)
+        .then((response)=>{
+            const msg = response.body.msg;
+            expect(msg).toBe('Bad Request');
+        });
+    });
+    test('400: posting a comment to a valid article_id with a missing key (that has a NOT NULL constraint) returns bad request', ()=>{
+        const newComment = {
+            username: "icellusedkars",
+        };
+        return request(app)
+        .post('/api/articles/10/comments')
+        .send(newComment)
+        .expect(400)
+        .then((response)=>{
+            const msg = response.body.msg;
+            expect(msg).toBe('Bad Request');
+        });
+    });
+    test('400: posting a comment to an invalid article id returns bad request', ()=>{
+        const newComment = {
+            username: "icellusedkars",
+            body: "my eyes hurt from looking at this article"
+        };
+        return request(app)
+        .post('/api/articles/DROPDATABASE/comments')
+        .send(newComment)
+        .expect(400)
+        .then((response)=>{
+            const msg = response.body.msg;
+            expect(msg).toBe('Bad Request');
         })
     });
 });
