@@ -1,4 +1,4 @@
-const {selectTopics,selectArticles, selectArticleById, selectCommentsByArticleId} = require('../models/news.model');
+const {selectTopics,selectArticles, selectArticleById, selectCommentsByArticleId, selectUsers} = require('../models/news.model');
 
 exports.getMessage = (req,res,next)=>{
     const msg = 'OK';
@@ -41,6 +41,16 @@ exports.getCommentsByArticleId = (req,res,next)=>{
     selectCommentsByArticleId(article_id)
     .then((comments)=>{
         res.status(200).send({comments})
+    })
+    .catch((err)=>{
+        next(err)
+    })
+}
+
+exports.getUsers = (req,res,next)=>{
+    selectUsers()
+    .then((users)=>{
+        res.status(200).send({users})
     })
     .catch((err)=>{
         next(err)
