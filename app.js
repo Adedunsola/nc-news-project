@@ -13,29 +13,33 @@ app.use(express.json())
 
 
 
-//1. GET /api
+//0. GET /api
 app.get('/api', getMessage);
 
-//2. GET /api/topics
+//3. GET /api/topics
 app.get('/api/topics', getTopics);
 
-//3. GET /api/articles
+//4. GET /api/articles
 app.get('/api/articles', getArticles);
 
-//4. GET /api/articles/:article_id
+//5. GET /api/articles/:article_id
 app.get('/api/articles/:article_id', getArticleById);
 
-//5. GET /api/articles/:article_id/comments
+//6. GET /api/articles/:article_id/comments
 app.get('/api/articles/:article_id/comments', getCommentsByArticleId);
 
-//6. POST /api/articles/:article_id/comments
+//7. POST /api/articles/:article_id/comments
 app.post('/api/articles/:article_id/comments', postComment);
 
-//7. PATCH /api/articles/:article_id
+//8. PATCH /api/articles/:article_id
 app.patch('/api/articles/:article_id', patchVotesInArticles);
 
-//8. GET /api/users
+//9. GET /api/users
 app.get('/api/users', getUsers);
+
+
+
+
 
 
 

@@ -1,19 +1,39 @@
 const db = require('../db/connection');
 
 
+
 //ARTICLES ENDPOINT
-exports.selectArticles = ()=>{
-   const queryString = 
+exports.selectArticles = (topicQuery,sort_by ='created_at',order = 'desc')=>{
+    const queryValues = []
+    validSortByQueries = ['title','topic','author','created_at','votes','comment_count'];
+    validOrderByQueries = ['asc','desc']
+    
+    if(!validSortByQueries.includes(sort_by) || !validOrderByQueries.includes(order)){
+        return Promise.reject({ status:400, msg: 'Bad Request'})
+    }
+   
+    let queryString = 
      `SELECT articles.article_id,articles.title,articles.topic,articles.author,articles.created_at,articles.votes,count(comments.article_id=articles.article_id) AS comment_count
      FROM articles
-     LEFT JOIN comments ON articles.article_id=comments.article_id
-     GROUP BY articles.article_id
-     ORDER BY articles.created_at desc;`
-   return db
-    .query(queryString).then((result)=>{
-        return result.rows;
-    });
-}
+     LEFT JOIN comments ON articles.article_id=comments.article_id `
+    
+     if(topicQuery !== undefined){
+        queryString +=  `WHERE articles.topic = $1 `;
+        queryValues.push(topicQuery)
+     }
+        queryString += `GROUP BY articles.article_id 
+                        ORDER BY ${sort_by} ${order};`
+    return db
+    .query(queryString,queryValues).then((result)=>{
+        const allArticles = result.rows
+       if(allArticles.length == 0){
+            return []
+       }
+            return allArticles;
+        
+        
+    })
+};
 
 
 exports.selectArticleById = (article_id) =>{
@@ -45,3 +65,6 @@ exports.updateVotesInArticles = (inc_votes,article_id)=>{
         } 
     })
 } 
+
+
+ 
