@@ -53,7 +53,6 @@ app.all('*', manage404Errors);
 
 
 app.use((err,req,res,next)=>{
-    console.log(err)
     res.sendStatus(500);
 });
 

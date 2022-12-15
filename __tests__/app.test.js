@@ -397,7 +397,7 @@ describe('9. GET /api/users', ()=>{
             });
         });
     })
-    test('404, returns Not Found when invalid API is given', ()=>{
+    test('404: returns Not Found when invalid API is given', ()=>{
         return request(app)
         .get('/api/CreateTable')
         .expect(404)
@@ -408,7 +408,7 @@ describe('9. GET /api/users', ()=>{
 })
 
 describe('10. GET /api/articles?queries', ()=>{
-    test('responds with article specified by the topic query', ()=>{
+    test('TOPIC: responds with article specified by the topic query', ()=>{
         return request(app)
         .get('/api/articles?topic=cats')
         .expect(200)
@@ -445,5 +445,90 @@ describe('10. GET /api/articles?queries', ()=>{
             });
         });
     });
-
+    test('404: returns not found when topic query does not exist', ()=>{
+        return request(app)
+        .get('/api/articles?topic=HOW ARE YOU!!')
+        .expect(404)
+        .then(({body: {msg}})=>{
+            expect(msg).toBe('Topic Not Found')
+        })
+    });
+    test('SORT_BY:title, responds with appropraite sort_by as given in the query (DEFAULT ORDER=DESC)', () => {
+        return request(app)
+        .get('/api/articles?sort_by=title')
+        .expect(200)
+        .then(({ body: { articles } }) => {
+        expect(articles).toBeSortedBy('title', {descending: true})
+        })
+      });
+      test('SORT_BY:comment_count, responds with appropraite sort_by as given in the query (DEFAULT ORDER=DESC)', () => {
+        return request(app)
+        .get('/api/articles?sort_by=comment_count')
+        .expect(200)
+        .then(({ body: { articles } }) => {
+        expect(articles).toBeSorted('comment_count', {descending: true})
+        })
+      });
+      test('SORT_BY:author, responds with appropraite sort_by as given in the query (DEFAULT ORDER=DESC)', () => {
+        return request(app)
+        .get('/api/articles?sort_by=author')
+        .expect(200)
+        .then(({ body: { articles } }) => {
+        expect(articles).toBeSorted('author', {descending: true})
+        })
+      });
+      test('SORT_BY:votes, responds with appropraite sort_by as given in the query (DEFAULT ORDER=DESC)', () => {
+        return request(app)
+        .get('/api/articles?sort_by=votes')
+        .expect(200)
+        .then(({ body: { articles } }) => {
+        expect(articles).toBeSorted('votes', {descending: true})
+        })
+      });
+      test('SORT_BY:topic,responds with appropraite sort_by as given in the query (DEFAULT ORDER=DESC)', () => {
+        return request(app)
+        .get('/api/articles?sort_by=topic')
+        .expect(200)
+        .then(({ body: { articles } }) => {
+        expect(articles).toBeSorted('topic', {descending: true})
+        })
+      });
+      test('400: returns bad request when given an invalid sort_by query', () => {
+        return request(app)
+          .get('/api/articles?sort_by=DROP DATABASE')
+          .expect(400).then(({body: { msg }})=> {
+            expect(msg).toBe('Bad Request')
+          })
+      });
+      test('ORDER:asc, responds with the appropriate order when given the order query (DEFAULT SORT_BY=DATE)', () => {
+        return request(app)
+        .get('/api/articles?order=asc')
+        .expect(200)
+        .then(({ body: { articles } }) => {
+        expect(articles).toBeSorted('created_at', {ascending: true})
+        })
+      });
+      test('ORDER:desc, responds with the appropriate order when given the order query (DEFAULT SORT_BY=DATE)', () => {
+        return request(app)
+        .get('/api/articles?order=desc')
+        .expect(200)
+        .then(({ body: { articles } }) => {
+        expect(articles).toBeSorted('created_at', {descending: true})
+        })
+      });
+      test('400: returns bad request when given an invalid order query', () => {
+        return request(app)
+          .get('/api/articles?order=DROP TABLES')
+          .expect(400).then(({body: { msg }})=> {
+            expect(msg).toBe('Bad Request')
+          })
+      });
+      test('DEFAULT: that when sort_by or order query is not given, it defaults to sort by date and descending order ', () => {
+        return request(app)
+        .get('/api/articles')
+        .expect(200)
+        .then(({ body: { articles } }) => {
+        expect(articles).toBeSorted('created_at', {descending: true})
+        })
+      });
 })

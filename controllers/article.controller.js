@@ -3,8 +3,9 @@ const {selectArticles, selectArticleById, updateVotesInArticles} = require('../m
 //ARTICLES CONTROLLER
 
 exports.getArticles =(req,res,next)=>{
+    const {sort_by,order} = req.query
     const topicQuery = req.query.topic
-    selectArticles(topicQuery)
+    selectArticles(topicQuery,sort_by,order)
     .then((articles)=>{
         res.status(200).send({articles})
     })
