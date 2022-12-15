@@ -4,7 +4,7 @@ const app = express();
 const {manage404Errors,manage400Errors,manageCustomErrors} = require('./errorhandling')
 const {getMessage, getTopics} = require ('./controllers/topics.controller');
 const {getArticles, getArticleById,patchVotesInArticles} = require ('./controllers/article.controller');
-const {getCommentsByArticleId,postComment} = require ('./controllers/comments.controller');
+const {getCommentsByArticleId,postComment,deleteComment} = require ('./controllers/comments.controller');
 const {getUsers} = require ('./controllers/users.controller');
 
 app.use(express.json())
@@ -37,6 +37,11 @@ app.patch('/api/articles/:article_id', patchVotesInArticles);
 //9. GET /api/users
 app.get('/api/users', getUsers);
 
+//10. GET /api/articles?queries
+//11. GET /api/articles/:article_id(comment_count)
+//12. DELETE /api/comments/comment_id
+app.delete('/api/comments/:comment_id', deleteComment)
+
 
 
 
@@ -45,13 +50,13 @@ app.get('/api/users', getUsers);
 
 
 //Error Handling
-
 app.use(manage400Errors);
 app.use(manageCustomErrors);
 app.all('*', manage404Errors); 
 
 
 app.use((err,req,res,next)=>{
+    console.log(err)
     res.sendStatus(500);
 });
 
