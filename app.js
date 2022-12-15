@@ -37,7 +37,6 @@ app.patch('/api/articles/:article_id', patchVotesInArticles);
 //9. GET /api/users
 app.get('/api/users', getUsers);
 
-//10. GET /api/articles?topic
 
 
 

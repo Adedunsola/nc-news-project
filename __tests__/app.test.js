@@ -445,12 +445,12 @@ describe('10. GET /api/articles?queries', ()=>{
             });
         });
     });
-    test('404: returns not found when topic query does not exist', ()=>{
+    test('TOPIC: returns empty array when valid but not existent topic query is given', ()=>{
         return request(app)
-        .get('/api/articles?topic=HOW ARE YOU!!')
-        .expect(404)
-        .then(({body: {msg}})=>{
-            expect(msg).toBe('Topic Not Found')
+        .get('/api/articles?topic=paper')
+        .expect(200)
+        .then(({body})=>{
+            expect(body.articles).toHaveLength(0)
         })
     });
     test('SORT_BY:title, responds with appropraite sort_by as given in the query (DEFAULT ORDER=DESC)', () => {
