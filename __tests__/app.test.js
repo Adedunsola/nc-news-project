@@ -6,6 +6,7 @@ const seed = require('../db/seeds/seed');
 const testData = require('../db/data/test-data');
 
 
+
 afterAll(()=>{
     if(db.end) db.end();
 });
@@ -13,14 +14,11 @@ afterAll(()=>{
 beforeEach(()=> seed(testData))
 
 describe('0. GET /api', ()=>{
-    test('returns message: OK', ()=>{
+    test('responds with JSON describing all the available endpoints', ()=>{
         return request(app)
         .get('/api')
         .expect(200)
-        .then((response)=>{
-            const msg = response.text;
-            expect(msg).toBe('OK');
-        })
+    })
     });
     test('404, returns Not Found', ()=>{
         return request(app)
@@ -30,7 +28,7 @@ describe('0. GET /api', ()=>{
             expect(msg).toBe('Not Found');
         })
     });
-});
+
 
 describe('3. GET /api/topics', ()=>{
     test('responds with an array of topic objects', ()=>{
