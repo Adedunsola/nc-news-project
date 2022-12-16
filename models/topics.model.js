@@ -1,5 +1,6 @@
 const db = require('../db/connection');
 
+
 //TOPICS ENDPOINT
 exports.selectTopics = ()=>{
     return db

@@ -1,12 +1,11 @@
 
 const {selectTopics} = require('../models/topics.model');
-
+const endpoints = require('../endpoints.json')
 
 //TOPICS CONTROLLER
-exports.getMessage = (req,res,next)=>{
-    const msg = 'OK';
-    return res.status(200).send(msg);
-};
+exports.getApi = (req,res,next)=>{
+    return res.status(200).send(endpoints);
+}
 
 exports.getTopics = (req,res,next)=>{
     selectTopics()
