@@ -587,3 +587,29 @@ test('404: Valid but non-existent article_id returns Not Found', ()=>{
     })
 });
 })
+
+describe('12. DELETE /api/comments/:comment_id', ()=>{
+    test('204: NO Content, deletes the comment with the given comment id ', ()=>{
+      return request(app)
+      .delete('/api/comments/1')
+      .expect(204)
+  });
+  test('404: Valid but non-existent comment_id returns Not Found', ()=>{
+    return request(app)
+    .delete('/api/comments/2000')
+    .expect(404)
+    .then((response)=>{
+        const msg = response.body.msg;
+        expect(msg).toBe('Comment Not Found');
+    })
+});
+test('400: invalid comment_id returns Bad Request', ()=>{
+    return request(app)
+    .delete('/api/comments/INSERT INTO COMMENTS')
+    .expect(400)
+    .then((response)=>{
+        const msg = response.body.msg;
+        expect(msg).toBe('Bad Request');
+    })
+});
+})

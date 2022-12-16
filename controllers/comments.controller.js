@@ -1,4 +1,4 @@
-const {selectCommentsByArticleId, addComment} = require('../models/comments.model');
+const {selectCommentsByArticleId, addComment, removeComment} = require('../models/comments.model');
 
 
 //COMMENTS CONTROLLER
@@ -17,6 +17,17 @@ exports.postComment =(req,res,next)=>{
     const {article_id} = req.params
     addComment(req.body,article_id).then((comment)=>{
         res.status(201).send({comment})
+    })
+    .catch((err)=>{
+        next(err)
+    })
+}
+
+exports.deleteComment=(req,res,next)=>{
+    const {comment_id} = req.params
+    removeComment(comment_id)
+    .then((comment)=>{
+        res.status(204).send('No content')
     })
     .catch((err)=>{
         next(err)
