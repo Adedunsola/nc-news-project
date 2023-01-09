@@ -1,4 +1,4 @@
-
+const cors = require('cors')
 const express = require ('express');
 const app = express();
 const {manage404Errors,manage400Errors,manageCustomErrors} = require('./errorhandling')
@@ -7,6 +7,7 @@ const {getArticles, getArticleById,patchVotesInArticles} = require ('./controlle
 const {getCommentsByArticleId,postComment,deleteComment} = require ('./controllers/comments.controller');
 const {getUsers} = require ('./controllers/users.controller');
 
+app.use(cors())
 app.use(express.json())
 
 
