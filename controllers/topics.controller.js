@@ -4,7 +4,7 @@ const endpoints = require('../endpoints.json')
 
 //TOPICS CONTROLLER
 exports.getApi = (req,res,next)=>{
-    return res.status(200).send(endpoints);
+    return res.status(200).send({endpoints});
 }
 
 exports.getTopics = (req,res,next)=>{
